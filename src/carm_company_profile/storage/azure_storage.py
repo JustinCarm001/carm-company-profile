@@ -16,11 +16,14 @@ from carm_data_models import CompanyProfile
 
 # Azure imports are optional (only needed if using Azure)
 try:
-    from azure.storage.blob import BlobServiceClient, BlobClient
+    from azure.storage.blob import BlobServiceClient, BlobClient, ContentSettings
     from azure.core.exceptions import ResourceNotFoundError
     AZURE_AVAILABLE = True
 except ImportError:
     AZURE_AVAILABLE = False
+    BlobServiceClient = None  # type: ignore
+    BlobClient = None  # type: ignore
+    ContentSettings = None  # type: ignore
 
 
 class AzureBlobStorage(BaseStorage):
@@ -169,7 +172,7 @@ class AzureBlobStorage(BaseStorage):
         blob_client.upload_blob(
             json_data,
             overwrite=True,
-            content_settings={'content_type': 'application/json'}
+            content_settings=ContentSettings(content_type='application/json')
         )
 
     def delete(self, profile_id: str) -> None:
